@@ -3,8 +3,10 @@ from fastapi.responses import RedirectResponse
 from authlib.integrations.starlette_client import OAuth
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.config import Config
+from urllib.parse import urlencode
 from database import init_db
-from sqlmodel import Session
+from sqlmodel import Session, select
+from database import get_session
 from models import User, Post
 import os
 import json
@@ -47,7 +49,7 @@ def require_login(request: Request):
 # auth0 variables
 AUTH0_DOMAIN = os.getenv("AUTH0_DOMAIN")
 AUTH0_CLIENT_ID = os.getenv("AUTH0_CLIENT_ID")
-REDIRECT_AFTER_LOGOUT = "http://127.0.0.1:8000/login"
+REDIRECT_AFTER_LOGOUT = "http://127.0.0.1:8000/login"  # change if want redirect different after logout
 
 # auth login
 @app.get('/login')
@@ -57,22 +59,36 @@ async def login(request: Request):
 
 # auth callback
 @app.get('/callback')
-async def callback(request: Request):
+async def callback(request: Request, db: Session = Depends(get_session)):
     token = await oauth.auth0.authorize_access_token(request)
 
-    user_info = token.get("userinfo")
-    request.session["user"] = dict(user_info)
-    return RedirectResponse(url='/posts')
+    user_info = token.get("userinfo") or {}
+    email = user_info.get("email")
+    if not email:
+        raise HTTPException(status_code=400, detail="Email not found in user info")
+
+    # add email into user table
+    existing = db.exec(select(User).where(User.email == email)).first()
+    if not existing:
+        user = User(email=email)
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+    else:
+        user = existing
+
+    request.session["user"] = {"id": user.id, "email": user.email}
+    return RedirectResponse(url='/posts')  # change if want redirect different after login
 
 # auth logout
 @app.get('/logout')
 async def logout(request: Request):
     request.session.clear()
 
-    logout_url = (
-        f"https://{AUTH0_DOMAIN}/v2/logout"
-        f"?client_id={AUTH0_CLIENT_ID}"
-        f"&returnTo={REDIRECT_AFTER_LOGOUT}"
-    )
+    params = urlencode({
+        "client_id": AUTH0_CLIENT_ID,
+        "returnTo": REDIRECT_AFTER_LOGOUT,
+    })
+    logout_url = f"https://{AUTH0_DOMAIN}/v2/logout?{params}"
 
     return RedirectResponse(url=logout_url)
