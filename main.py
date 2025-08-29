@@ -2,9 +2,15 @@ from fastapi import FastAPI, Depends
 from database import init_db
 from sqlmodel import Session
 from models import User, Post
+from routes import router
 
 app = FastAPI()
+
 
 @app.on_event("startup")
 def on_startup():
     init_db()
+
+
+# Include all routes from the router
+app.include_router(router)
