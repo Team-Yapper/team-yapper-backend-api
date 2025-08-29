@@ -27,3 +27,6 @@ venv/
 
 # Visual Studio Code
 .vscode/
+
+# Database
+*.db
