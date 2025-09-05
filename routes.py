@@ -70,3 +70,55 @@ def read_post_info(post_id: int, session: Session = Depends(get_session)):
             "email": post.user.email
         } if post.user else None
     }
+
+# UPDATE post route
+@router.patch('/posts/{post_id}')
+def update_post(post_id: int,
+                post: PostCreate,
+                user: dict = Depends(require_login),
+                session: Session = Depends(get_session)):
+
+    # get post from db
+    db_post = session.get(Post, post_id)
+
+    if not db_post:
+        raise HTTPException(status_code=404, detail="Post not found")
+
+    # ensure the logged in user is the owner of the post
+    db_user = session.exec(select(User).where(
+        User.email == user["email"])).first()
+
+    if db_post.user_id != db_user.id:
+        raise HTTPException(status_code=403, detail="Forbidden")
+
+    # update post content
+    db_post.content = post.content
+    session.add(db_post)
+    session.commit()
+    session.refresh(db_post)
+    return db_post
+
+
+# DELETE post route
+@router.delete('/posts/{post_id}')
+def delete_post(post_id: int,
+                user: dict = Depends(require_login),
+                session: Session = Depends(get_session)):
+
+    # get post from db
+    db_post = session.get(Post, post_id)
+
+    if not db_post:
+        raise HTTPException(status_code=404, detail="Post not found")
+
+    # ensure the logged in user is the owner of the post
+    db_user = session.exec(select(User).where(
+        User.email == user["email"])).first()
+
+    if db_post.user_id != db_user.id:
+        raise HTTPException(status_code=403, detail="Forbidden")
+
+    # delete post
+    session.delete(db_post)
+    session.commit()
+    return {"message": "Post deleted successfully"}
