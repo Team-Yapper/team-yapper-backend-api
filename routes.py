@@ -72,7 +72,7 @@ def read_post_info(post_id: int, session: Session = Depends(get_session)):
     }
 
 # Get all posts for a specific user
-@router.get("/users/{user_id}/posts")
+@router.get("/user/{user_id}/posts")
 def get_user_posts(user_id: int, session: Session = Depends(get_session)):
     posts = session.exec(select(Post).where(Post.user_id == user_id)).all()
     if not posts:
