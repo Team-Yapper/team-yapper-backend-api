@@ -28,10 +28,6 @@ def on_startup():
     init_db()
 
 
-# Include all routes from the router
-app.include_router(router)
-
-
 # Oauth config
 config = Config('.env')
 oauth = OAuth(config)
@@ -44,15 +40,6 @@ oauth.register(
     },
     server_metadata_url=f"https://{os.getenv('AUTH0_DOMAIN')}/.well-known/openid-configuration"
 )
-
-
-# auth0 dependency
-def require_login(request: Request):
-    user = request.session.get("user")
-    if not user:
-        raise HTTPException(status_code=401, detail="Unauthorized")
-    return user
-
 
 # auth0 variables
 AUTH0_DOMAIN = os.getenv("AUTH0_DOMAIN")
@@ -109,3 +96,6 @@ async def logout(request: Request):
     logout_url = f"https://{AUTH0_DOMAIN}/v2/logout?{params}"
 
     return RedirectResponse(url=logout_url)
+
+# Include all routes from the router
+app.include_router(router)
