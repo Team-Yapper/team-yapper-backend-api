@@ -9,6 +9,7 @@ from database import init_db
 from sqlmodel import Session, select
 from database import get_session
 from models import User, Post
+from routes import router
 import os
 import json
 from dotenv import load_dotenv
@@ -97,5 +98,4 @@ async def logout(request: Request):
 
     return RedirectResponse(url=logout_url)
 
-# Include all routes from the router
 app.include_router(router)
