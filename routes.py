@@ -49,13 +49,15 @@ def create_post(post: PostCreate, user: dict = Depends(require_login), session: 
     session.refresh(new_post)
     return new_post
 
+# Get content of a specific post
 @router.get("/posts/{post_id}")
 def read_post(post_id: int, session: Session = Depends(get_session)):
     post = session.get(Post, post_id)
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
-    return post.content
+    return "Post: " + post.content
 
+# Get detailed info about a specific post
 @router.get("/posts/{post_id}/info")
 def read_post_info(post_id: int, session: Session = Depends(get_session)):
     post = session.get(Post, post_id)
@@ -75,6 +77,10 @@ def read_post_info(post_id: int, session: Session = Depends(get_session)):
 @router.get("/user/{user_id}/posts")
 def get_user_posts(user_id: int, session: Session = Depends(get_session)):
     posts = session.exec(select(Post).where(Post.user_id == user_id)).all()
+    user = session.get(User, user_id)
     if not posts:
-        return {"message": "User has no posts."}
-    return posts
+        return {"message": "User has no posts.", "email": user.email if user else None}
+    return {
+        "email": user.email if user else None,
+        "posts": posts
+    }
