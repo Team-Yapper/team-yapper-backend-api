@@ -109,7 +109,8 @@ def update_post(post_id: int,
     db_user = session.exec(select(User).where(
         User.email == user["email"])).first()
 
-    if db_post.user_id != db_user.id:
+    # also checks if a user is not an admin
+    if db_post.user_id != db_user.id and not db_user.is_admin:
         raise HTTPException(status_code=403, detail="Forbidden")
 
     # update post content

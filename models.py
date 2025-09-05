@@ -2,10 +2,14 @@ from typing import Optional, List
 from sqlmodel import SQLModel, Field, Relationship
 
 # user model
+
+
 class User(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     email: str = Field(index=True, unique=True)
     posts: List["Post"] = Relationship(back_populates="user")
+    is_admin: bool = Field(default=False)
+
 
 class Post(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
