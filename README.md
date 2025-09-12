@@ -39,3 +39,5 @@ Backend module project for Multiverse, a mini twitter creating CRUD routes for p
    uvicorn main:app --reload
    ```
 ***
+
+## API Documentation 📄
