@@ -3,7 +3,7 @@ from models import User
 
 # Users to seed
 users_to_seed = [
-    User(email="alice@example.com"),
+    User(email="alice@example.com", is_admin=True),
     User(email="bob@example.com"),
 ]
 

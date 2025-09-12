@@ -11,8 +11,6 @@ class PostCreate(BaseModel):
     content: str
 
 # auth0 dependency
-
-
 def require_login(request: Request):
     user = request.session.get("user")
     if not user:
@@ -50,8 +48,6 @@ def create_post(post: PostCreate, user: dict = Depends(require_login), session: 
     return new_post
 
 # Get content of a specific post
-
-
 @router.get("/posts/{post_id}")
 def read_post(post_id: int, session: Session = Depends(get_session)):
     post = session.get(Post, post_id)
@@ -60,8 +56,6 @@ def read_post(post_id: int, session: Session = Depends(get_session)):
     return "Post: " + post.content
 
 # Get detailed info about a specific post
-
-
 @router.get("/posts/{post_id}/info")
 def read_post_info(post_id: int, session: Session = Depends(get_session)):
     post = session.get(Post, post_id)
@@ -78,8 +72,6 @@ def read_post_info(post_id: int, session: Session = Depends(get_session)):
     }
 
  # Get all posts for a specific user
-
-
 @router.get("/user/{user_id}/posts")
 def get_user_posts(user_id: int, session: Session = Depends(get_session)):
     posts = session.exec(select(Post).where(Post.user_id == user_id)).all()
@@ -109,7 +101,8 @@ def update_post(post_id: int,
     db_user = session.exec(select(User).where(
         User.email == user["email"])).first()
 
-    if db_post.user_id != db_user.id:
+    # also checks if a user is an admin
+    if db_post.user_id != db_user.id and not db_user.is_admin:
         raise HTTPException(status_code=403, detail="Forbidden")
 
     # update post content
@@ -136,7 +129,8 @@ def delete_post(post_id: int,
     db_user = session.exec(select(User).where(
         User.email == user["email"])).first()
 
-    if db_post.user_id != db_user.id:
+    # also checks if a user is an admin
+    if db_post.user_id != db_user.id and not db_user.is_admin:
         raise HTTPException(status_code=403, detail="Forbidden")
 
     # delete post
