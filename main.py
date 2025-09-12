@@ -44,7 +44,7 @@ oauth.register(
 AUTH0_DOMAIN = os.getenv("AUTH0_DOMAIN")
 AUTH0_CLIENT_ID = os.getenv("AUTH0_CLIENT_ID")
 # change if want redirect different after logout
-REDIRECT_AFTER_LOGOUT = "http://127.0.0.1:8000/login"
+REDIRECT_AFTER_LOGOUT = "https://team-yapper-backend-api.onrender.com/login"
 
 # auth login
 
