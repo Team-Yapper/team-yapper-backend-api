@@ -42,6 +42,11 @@ Backend module project for Multiverse, a mini twitter creating CRUD routes for p
    ```
    uvicorn main:app --reload
    ```
-***
 
 ## API Documentation 📄
+
+## Deployment URL 🚀
+   ```
+   https://team-yapper-backend-api.onrender.com/posts
+   ```
+***
