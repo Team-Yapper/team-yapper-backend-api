@@ -19,7 +19,11 @@ Backend module project for Multiverse, a mini twitter creating CRUD routes for p
     ```
     Activation on Windows
     ``` 
-    
+    source .venv/Scripts/activate
+    ```
+    Deactivation
+    ``` 
+    deactivate
     ```
   
 4. **Install Dependencies**
