@@ -12,23 +12,29 @@ Backend module project for Multiverse, a mini twitter creating CRUD routes for p
 2. **Create and activate virtual environment**
     ```
     python -m venv .venv    
-    source .venv/bin/activate (Mac)
-     (Windows)
+    ```
+    Activation on Mac
+    ``` 
+    source .venv/bin/activate
+    ```
+    Activation on Windows
+    ``` 
+    
     ```
   
-3. **Install Dependencies**
+4. **Install Dependencies**
    ```
    pip install -r requirements.txt
    ```
-4. **Create a .env file**
+5. **Create a .env file**
    ```
    # Store environment variables here, such as API keys and tokens
    ```
-5. **Seed the database**
+6. **Seed the database**
    ```
    python seed_db.py
    ```
-6. **Start server**
+7. **Start server**
    ```
    uvicorn main:app --reload
    ```
