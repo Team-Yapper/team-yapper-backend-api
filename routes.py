@@ -66,7 +66,6 @@ def read_post_info(post_id: int, session: Session = Depends(get_session)):
         "content": post.content,
         "user_id": post.user_id,
         "user": {
-            "id": post.user.id,
             "email": post.user.email
         } if post.user else None
     }
@@ -78,9 +77,13 @@ def get_user_posts(user_id: int, session: Session = Depends(get_session)):
     user = session.get(User, user_id)
     if not posts:
         return {"message": "User has no posts.", "email": user.email if user else None}
+    # Exclude user.id from each post
+    filtered_posts = [
+        {"id": post.id, "content": post.content} for post in posts
+    ]
     return {
         "email": user.email if user else None,
-        "posts": posts
+        "posts": filtered_posts
     }
 
 
