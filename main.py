@@ -79,13 +79,19 @@ async def callback(request: Request, db: Session = Depends(get_session)):
     else:
         user = existing
 
-    request.session["user"] = {"id": user.id, "email": user.email}
+    # check if user is admin
+    admin_emails = ["jmhfullstack@gmail.com", "jordan@yahoo.com"]
+    if email in admin_emails:
+        user.is_admin = True
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+
+    request.session["user"] = {"id": user.id, "email": user.email, "is_admin": user.is_admin}
     # change if want redirect different after login
     return RedirectResponse(url='/posts')
 
 # auth logout
-
-
 @app.get('/logout')
 async def logout(request: Request):
     request.session.clear()
