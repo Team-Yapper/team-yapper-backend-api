@@ -1,7 +1,6 @@
 # team-yapper-backend-api
 Backend module project for Multiverse, a mini twitter creating CRUD routes for post and Auth0 for authentication and authorization 
-
-## 
+*** 
 
 ## Installation 📦
 1. **Clone the Repository**
@@ -42,8 +41,10 @@ Backend module project for Multiverse, a mini twitter creating CRUD routes for p
    ```
    uvicorn main:app --reload
    ```
+***
 
 ## API Documentation 📄
+***
 
 ## Deployment URL 🚀
    ```
