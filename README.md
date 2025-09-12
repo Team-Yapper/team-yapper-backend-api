@@ -13,15 +13,15 @@ Backend module project for Multiverse, a mini twitter creating CRUD routes for p
     ```
     python -m venv .venv    
     ```
-    Activation on Mac
+    Activation on Mac:
     ``` 
     source .venv/bin/activate
     ```
-    Activation on Windows
+    Activation on Windows:
     ``` 
     source .venv/Scripts/activate
     ```
-    Deactivation
+    Deactivation:
     ``` 
     deactivate
     ```
