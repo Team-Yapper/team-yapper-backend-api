@@ -22,8 +22,6 @@ app.add_middleware(SessionMiddleware,
                    secret_key=os.getenv("SECRET", "!supersecret"))
 
 # db initialize
-
-
 @app.on_event("startup")
 def on_startup():
     init_db()
@@ -57,8 +55,6 @@ async def login(request: Request):
     return await oauth.auth0.authorize_redirect(request, redirect_uri)
 
 # auth callback
-
-
 @app.get('/callback')
 async def callback(request: Request, db: Session = Depends(get_session)):
     token = await oauth.auth0.authorize_access_token(request)
