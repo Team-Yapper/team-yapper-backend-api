@@ -13,6 +13,14 @@ from routes import router
 import os
 import json
 from dotenv import load_dotenv
+import uvicorn
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger("api")
 
 load_dotenv()
 
@@ -23,8 +31,11 @@ app.add_middleware(SessionMiddleware,
 
 # db initialize
 @app.on_event("startup")
-def on_startup():
+async def on_startup():
     init_db()
+    logger.info("Application startup complete")
+    logger.info("Login page available at: http://127.0.0.1:8000/login")
+    logger.info("Posts page available at: http://127.0.0.1:8000/posts")
 
 
 # Oauth config
