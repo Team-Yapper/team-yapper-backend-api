@@ -1,32 +1,16 @@
 #!/bin/bash
 
-# Initialize the database structure first
-echo "🔧 Initializing database structure..."
-python -c "from database import init_db; init_db()"
+DB_FILE="/app/data/yapper.db"
 
-# Wait a moment for tables to be created
-sleep 1
+# Ensure data dir exists (volume mount will persist)
+mkdir -p /app/data
 
-# Check if database already has users
-HAS_DATA=$(python -c "
-from database import engine
-from sqlmodel import Session, select
-from models import User
-
-try:
-    with Session(engine) as session:
-        users = session.exec(select(User)).first()
-        print('1' if users else '0')
-except Exception as e:
-    print('0')
-")
-
-# Only seed if no data exists
-if [ "$HAS_DATA" = "0" ]; then
-    echo "🌱 Database is empty, seeding initial data..."
+if [ ! -f "$DB_FILE" ]; then
+    echo "🔧 Database file not found — initializing and seeding..."
+    python -c "from database import init_db; init_db()"
     python seed_db.py
 else
-    echo "✅ Database already contains data, skipping seed"
+    echo "✅ Database file exists, skipping init/seed"
 fi
 
 # Start the application
