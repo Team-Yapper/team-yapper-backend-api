@@ -1,8 +1,11 @@
 from sqlmodel import SQLModel, create_engine, Session
+import os
+import dotenv
 
+dotenv.load_dotenv()
 
 # SQLite database file
-DATABASE_URL = "sqlite:///./yapper.db"
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 # create engine
 engine = create_engine(DATABASE_URL, echo=True)

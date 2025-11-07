@@ -1,0 +1,18 @@
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - yapper_data:/app/data
+    environment:
+      - DATABASE_URL=sqlite:///./data/yapper.db
+      # Add your other environment variables here
+      - AUTH0_DOMAIN=${AUTH0_DOMAIN}
+      - AUTH0_CLIENT_ID=${AUTH0_CLIENT_ID}
+      - AUTH0_CLIENT_SECRET=${AUTH0_CLIENT_SECRET}
+      - SECRET=${SECRET}
+    restart: unless-stopped  # Container restarts automatically unless explicitly stopped
+
+volumes:
+  yapper_data:

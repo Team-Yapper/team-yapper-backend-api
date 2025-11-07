@@ -1,0 +1,22 @@
+services:
+  - type: web  # Defines this as a web service
+    name: yapper-api  # Your service name on Render
+    env: docker  # Tells Render to use Docker for deployment
+    dockerfilePath: ./Dockerfile  # Path to your Dockerfile
+    
+    # Configure persistent storage
+    disk:
+      name: data
+      mountPath: /app/data  # Maps to your Docker volume path
+      sizeGB: 1 # Size of the persistent disk in GB
+    
+    # Environment variables
+    envVars:
+      - key: DATABASE_URL
+        value: sqlite:///./data/yapper.db
+      - key: AUTH0_DOMAIN
+        fromGroup: yapper-prod  # Use environment group for secrets
+      - key: AUTH0_CLIENT_ID
+        fromGroup: yapper-prod
+      - key: AUTH0_CLIENT_SECRET
+        fromGroup: yapper-prod
