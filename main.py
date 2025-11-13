@@ -9,11 +9,9 @@ from database import init_db
 from sqlmodel import Session, select
 from database import get_session
 from models import User, Post
-from routes import router
 import os
 import json
 from dotenv import load_dotenv
-import uvicorn
 import logging
 
 logging.basicConfig(
@@ -57,9 +55,11 @@ AUTH0_CLIENT_ID = os.getenv("AUTH0_CLIENT_ID")
 # change if want redirect different after logout
 REDIRECT_AFTER_LOGOUT = "https://team-yapper-backend-api.onrender.com/login"
 
+# set of admin emails
+admin_emails = {e.strip().lower() for e in os.getenv("ADMIN_EMAILS", "").split(",") if e.strip()}
+
+
 # auth login
-
-
 @app.get('/login')
 async def login(request: Request):
     redirect_uri = request.url_for("callback")
@@ -80,19 +80,16 @@ async def callback(request: Request, db: Session = Depends(get_session)):
     existing = db.exec(select(User).where(User.email == email)).first()
     if not existing:
         user = User(email=email)
-        db.add(user)
-        db.commit()
-        db.refresh(user)
     else:
         user = existing
 
     # check if user is admin
-    admin_emails = ["jmhfullstack@gmail.com", "jordan@yahoo.com"]
-    if email in admin_emails:
+    if email.lower() in admin_emails:
         user.is_admin = True
-        db.add(user)
-        db.commit()
-        db.refresh(user)
+
+    db.add(user)
+    db.commit()
+    db.refresh(user)
 
     request.session["user"] = {"id": user.id, "email": user.email, "is_admin": user.is_admin}
     # change if want redirect different after login
