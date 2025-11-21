@@ -9,8 +9,9 @@ from unittest.mock import AsyncMock, patch, MagicMock
 # Add parent directory to path so we can import from root
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+from models import User, SQLModel, Post
 from main import app, get_session
-from models import User, SQLModel
+from routes import require_login
 
 # Create in-memory test database
 @pytest.fixture(name="session")
@@ -29,8 +30,14 @@ def session_fixture():
 def client_fixture(session: Session):
     def get_session_override():
         return session
+    
+    # Mock logged-in user
+    def require_login_override():
+        return {"email": "testuser@example.com"}
 
     app.dependency_overrides[get_session] = get_session_override
+    app.dependency_overrides[require_login] = require_login_override
+    
     client = TestClient(app)
     yield client
     app.dependency_overrides.clear()
@@ -144,3 +151,90 @@ def test_logout_redirect(client: TestClient):
     assert response.status_code == 307
     assert "auth0" in response.headers["location"].lower()
     assert "logout" in response.headers["location"].lower()
+
+
+# Test that there are no posts yet
+def test_get_all_posts_empty(client):
+    response = client.get("/posts")
+    assert response.status_code == 200
+    # data hasn't been added yet, so expect this to be empty
+    assert response.json() == []
+
+# Test to check /GET all posts
+def test_get_all_posts_with_data(client, session):
+    # create a user and posts
+    user = User(email="test@example.com")
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+
+    post1 = Post(content="First post", user_id=user.id)
+    post2 = Post(content="Second post", user_id=user.id)
+    session.add_all([post1, post2])
+    session.commit()
+
+    # get all posts created
+    response = client.get("/posts")
+
+    # assert that the data is correct
+    assert response.status_code == 200
+    posts = response.json()
+    assert len(posts) == 2
+    assert posts[0]["content"] == "First post"
+    assert posts[1]["content"] == "Second post"
+
+# Test to check /GET/{post_id}
+def test_get_post_by_id(client, session):
+    # Create test user
+    user = User(email="testuser@example.com")
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+
+    # Create test post
+    post = Post(content="Specific post", user_id=user.id)
+    session.add(post)
+    session.commit()
+    session.refresh(post)
+
+    # get /posts/{post_id}
+    response = client.get(f"/posts/{post.id}")
+    assert response.status_code == 200
+
+    # FastAPI serializes plain strings as JSON strings
+    assert response.json() == f"Post: {post.content}"
+
+
+# Test to check /POST a new post
+def test_create_post(client, session):
+    # create a user
+    user = User(email="testuser@example.com")
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+
+    payload = {"content": "Hello world"}
+
+    # make /POST request
+    response = client.post("/posts", json=payload)
+
+    # assert that the data is correct
+    assert response.status_code in (200, 201)
+    data = response.json()
+    assert data["content"] == "Hello world"
+    assert data["user_id"] == user.id
+    assert "id" in data
+
+# Test that data is persistent
+def test_create_post_persists(client, session):
+    user = User(email="testuser@example.com")
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+
+    payload = {"content": "Persistent post"}
+    client.post("/posts", json=payload)
+
+    posts = session.exec(select(Post)).all()
+    assert len(posts) == 1
+    assert posts[0].content == "Persistent post"
