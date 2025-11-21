@@ -10,7 +10,6 @@ from sqlmodel import Session, SQLModel, create_engine
 from sqlmodel.pool import StaticPool
 
 from main import app, get_session
-from models import User, Post
 
 # Create in-memory test database
 @pytest.fixture(name="session") 
