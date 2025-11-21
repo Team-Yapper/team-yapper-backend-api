@@ -53,7 +53,14 @@ def read_post(post_id: int, session: Session = Depends(get_session)):
     post = session.get(Post, post_id)
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
-    return "Post: " + post.content
+    return {
+        "id": post.id,
+        "content": post.content,
+        "user": {
+            "id": post.user.id,
+            "email": post.user.email
+        } if post.user else None
+    }
 
 # Get detailed info about a specific post
 @router.get("/posts/{post_id}/info")
@@ -73,17 +80,20 @@ def read_post_info(post_id: int, session: Session = Depends(get_session)):
  # Get all posts for a specific user
 @router.get("/user/{user_id}/posts")
 def get_user_posts(user_id: int, session: Session = Depends(get_session)):
-    posts = session.exec(select(Post).where(Post.user_id == user_id)).all()
+    # checks if the user exists
     user = session.get(User, user_id)
-    if not posts:
-        return {"message": "User has no posts.", "email": user.email if user else None}
-    # Exclude user.id from each post
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    # User exists → get posts
+    posts = session.exec(select(Post).where(Post.user_id == user_id)).all()
+    # Format the posts (empty list is fine)
     filtered_posts = [
-        {"id": post.id, "content": post.content} for post in posts
+        {"id": post.id, "content": post.content} 
+        for post in posts
     ]
     return {
-        "email": user.email if user else None,
-        "posts": filtered_posts
+        "email": user.email,
+        "posts": filtered_posts,  # Will be [] when user has no posts
     }
 
 

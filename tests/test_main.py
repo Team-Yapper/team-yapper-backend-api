@@ -10,7 +10,7 @@ from unittest.mock import AsyncMock, patch, MagicMock
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from main import app, get_session
-from models import User, SQLModel
+from models import User, SQLModel, Post
 
 # Create in-memory test database
 @pytest.fixture(name="session")
