@@ -155,7 +155,7 @@ def test_read_post_success(client: TestClient, session: Session):
     session.commit()
     session.refresh(user)
 
-    post = Post(content="Hello!", user_id=user.id)
+    post = Post(content="Hello this is my yapper post!", user_id=user.id)
     session.add(post)
     session.commit()
     session.refresh(post)
@@ -165,7 +165,7 @@ def test_read_post_success(client: TestClient, session: Session):
     assert response.status_code == 200
     assert response.json() == {
         "id": post.id,
-        "content": "Hello!",
+        "content": "Hello this is my yapper post!",
         "user": {
             "id": user.id,
             "email": "test@example.com"
@@ -186,7 +186,7 @@ def test_read_post_info_success(client: TestClient, session: Session):
     session.refresh(user)
 
     # Create a post linked to the user
-    post = Post(content="Hello info!", user_id=user.id)
+    post = Post(content="Hello this is my yapper post!", user_id=user.id)
     session.add(post)
     session.commit()
     session.refresh(post)
@@ -198,7 +198,7 @@ def test_read_post_info_success(client: TestClient, session: Session):
     assert response.status_code == 200
     assert response.json() == {
         "id": post.id,
-        "content": "Hello info!",
+        "content": "Hello this is my yapper post!",
         "user_id": user.id,
         "user": {
             "email": "test@example.com"
