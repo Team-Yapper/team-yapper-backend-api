@@ -2,49 +2,16 @@ import pytest
 import sys
 from pathlib import Path
 from fastapi.testclient import TestClient
-from sqlmodel import Session, create_engine, select
-from sqlmodel.pool import StaticPool
-from unittest.mock import AsyncMock, patch, MagicMock
+from sqlmodel import select
+from unittest.mock import AsyncMock, patch
 
 # Add parent directory to path so we can import from root
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from models import User, SQLModel, Post
-from main import app, get_session
-from routes import require_login, Post
-
-# Create in-memory test database
-@pytest.fixture(name="session")
-def session_fixture():
-    engine = create_engine(
-        "sqlite://",
-        connect_args={"check_same_thread": False},
-        poolclass=StaticPool,
-    )
-    SQLModel.metadata.create_all(engine)
-    with Session(engine) as session:
-        yield session
-
-
-@pytest.fixture(name="client")
-def client_fixture(session: Session):
-    def get_session_override():
-        return session
-    
-    # Mock logged-in user
-    def require_login_override():
-        return {"email": "testuser@example.com"}
-
-    app.dependency_overrides[get_session] = get_session_override
-    app.dependency_overrides[require_login] = require_login_override
-    
-    client = TestClient(app)
-    yield client
-    app.dependency_overrides.clear()
-
+from models import User
 
 # Test login route
-def test_login_redirect(client: TestClient):
+def test_login_redirect(client):
     response = client.get("/login", follow_redirects=False)
     assert response.status_code == 302  # Redirect status
     assert "auth0" in response.headers["location"].lower()
@@ -52,7 +19,7 @@ def test_login_redirect(client: TestClient):
 
 # Test callback with new user
 @pytest.mark.asyncio
-async def test_callback_new_user(client: TestClient, session: Session):
+async def test_callback_new_user(client, session):
     mock_token = {
         "userinfo": {
             "email": "newuser@example.com",
@@ -76,7 +43,7 @@ async def test_callback_new_user(client: TestClient, session: Session):
 
 # Test callback with admin user
 @pytest.mark.asyncio
-async def test_callback_admin_user(client: TestClient, session: Session):
+async def test_callback_admin_user(client, session):
     mock_token = {
         "userinfo": {
             "email": "jmhfullstack@gmail.com",
@@ -99,7 +66,7 @@ async def test_callback_admin_user(client: TestClient, session: Session):
 
 # Test callback with existing user
 @pytest.mark.asyncio
-async def test_callback_existing_user(client: TestClient, session: Session):
+async def test_callback_existing_user(client, session):
     # Create existing user
     existing_user = User(email="existing@example.com", is_admin=False)
     session.add(existing_user)
@@ -124,7 +91,7 @@ async def test_callback_existing_user(client: TestClient, session: Session):
 
 # Test callback with missing email
 @pytest.mark.asyncio
-async def test_callback_missing_email(client: TestClient, session: Session):
+async def test_callback_missing_email(client):
     mock_token = {
         "userinfo": {}  # No email
     }
@@ -137,7 +104,7 @@ async def test_callback_missing_email(client: TestClient, session: Session):
 
 
 # Test logout clears session
-def test_logout_clears_session(client: TestClient):
+def test_logout_clears_session(client):
     # Set a session first
     with client:
         client.get("/logout", follow_redirects=False)
@@ -146,7 +113,7 @@ def test_logout_clears_session(client: TestClient):
 
 
 # Test logout redirect to Auth0
-def test_logout_redirect(client: TestClient):
+def test_logout_redirect(client):
     response = client.get("/logout", follow_redirects=False)
     assert response.status_code == 307
     assert "auth0" in response.headers["location"].lower()
