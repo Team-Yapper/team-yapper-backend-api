@@ -11,7 +11,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from models import User, SQLModel, Post
 from main import app, get_session
-from routes import require_login
+from routes import require_login, Post
 
 # Create in-memory test database
 @pytest.fixture(name="session")
