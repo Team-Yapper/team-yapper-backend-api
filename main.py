@@ -108,4 +108,9 @@ async def logout(request: Request):
 
     return RedirectResponse(url=logout_url)
 
+# health check
+@app.get("/health")
+async def health_check():
+    return {"status": "ok"}
+
 app.include_router(router)
