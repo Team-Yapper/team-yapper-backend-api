@@ -36,4 +36,4 @@ jobs:
         
     - name: Run Tests
       run: |
-        pytest --tb=short -maxfail=5 --disable-warnings continue-on-errors:false
+        pytest 
