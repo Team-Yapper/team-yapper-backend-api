@@ -12,7 +12,7 @@ def test_read_post_success(client, session):
     session.commit()
     session.refresh(user)
 
-    post = Post(content="hi", user_id=user.id)
+    post = Post(content="Hello this is my yapper post!", user_id=user.id)
     session.add(post)
     session.commit()
     session.refresh(post)
