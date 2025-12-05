@@ -1,4 +1,4 @@
-name: Test API
+name: Test 
 
 on:
   pull_request:
@@ -6,9 +6,21 @@ on:
 
 jobs:
   test:
+    name: Test 
     runs-on: ubuntu-latest
+
+    env:
+      AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN }}
+      AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID }}
+      AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET }}
+      AUTH0_CALLBACK_URL: ${{ secrets.AUTH0_CALLBACK_URL }}
+      SECRET: ${{ secrets.SECRET }}
+      DATABASE_URL: sqlite:///./test.db
+      ADMIN_EMAILS: ${{ secrets.ADMIN_EMAILS }}
+
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
     
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -20,11 +32,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         
-    - name: Run tests
-      env:
-        AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN }}
-        AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID }}
-        AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET }}
-        SECRET: ${{ secrets.SECRET }}
+    - name: Run Tests
       run: |
-        python -m pytest
+        pytest
