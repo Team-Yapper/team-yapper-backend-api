@@ -3,10 +3,12 @@ name: Test
 on:
   pull_request:
     branches: [ main ]
+  push:
+    branches: [ main ]
 
 jobs:
   test:
-    name: Test 
+    name: Run Tests 
     runs-on: ubuntu-latest
 
     env:
@@ -34,4 +36,4 @@ jobs:
         
     - name: Run Tests
       run: |
-        pytest
+        pytest 
