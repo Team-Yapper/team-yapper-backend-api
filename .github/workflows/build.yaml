@@ -37,3 +37,46 @@ jobs:
       - name: Run Tests
         run: |
           pytest
+
+      # Build Docker image using Dockerfile
+      - name: Build Docker image
+        run: |
+          docker build -t my-fastapi-app .
+
+      # Create Docker volume for persistence (same as docker-compose)
+      - name: Create Docker volume
+        run: |
+          docker volume create yapper_data
+
+      # Run Docker container with mounted volume & environment variables
+      - name: Run Docker container with volume
+        run: |
+          docker run -d --name test_container \
+            -e AUTH0_DOMAIN="${{ secrets.AUTH0_DOMAIN }}" \
+            -e AUTH0_CLIENT_ID="${{ secrets.AUTH0_CLIENT_ID }}" \
+            -e AUTH0_CLIENT_SECRET="${{ secrets.AUTH0_CLIENT_SECRET }}" \
+            -e AUTH0_CALLBACK_URL="${{ secrets.AUTH0_CALLBACK_URL }}" \
+            -e SECRET="${{ secrets.SECRET }}" \
+            -e DATABASE_URL="sqlite:///./data/yapper.db" \
+            -e ADMIN_EMAILS="${{ secrets.ADMIN_EMAILS }}" \
+            -v yapper_data:/app/data \
+            -p 8000:8000 \
+            my-fastapi-app
+
+      # Simple health check to verify the container is running
+      - name: Wait for FastAPI to be ready
+        run: |
+          for i in {1..5}; do
+            if curl -f http://localhost:8000/; then
+              echo "FastAPI is ready!"
+              break
+            fi
+            echo "Waiting..."
+            sleep 1
+          done
+
+      # Stop container when finished
+      - name: Stop Docker container
+        if: always()
+        run: |
+          docker stop test_container
