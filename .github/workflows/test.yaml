@@ -3,6 +3,8 @@ name: Test
 on:
   pull_request:
     branches: [ main ]
+  push:
+    branches: [ main ]
 
 jobs:
   test:
@@ -33,4 +35,5 @@ jobs:
         pip install -r requirements.txt
         
     - name: Run Tests
-      run: pytest || exit 1
+      run: |
+        pytest 
