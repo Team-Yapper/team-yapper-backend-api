@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: yapper-api
+    env: docker
+    dockerfilePath: ./Dockerfile
+
+    # Persistent disk for SQLite data
+    disk:
+      name: data
+      mountPath: /app/data
+      sizeGB: 1
+
+    envVars:
+      - key: DATABASE_URL
+        value: sqlite:////app/data/yapper.db
+      - key: AUTH0_DOMAIN
+        fromGroup: yapper-prod
+      - key: AUTH0_CLIENT_ID
+        fromGroup: yapper-prod
+      - key: AUTH0_CLIENT_SECRET
+        fromGroup: yapper-prod
+      - key: AUTH0_CALLBACK_URL
+        fromGroup: yapper-prod
+      - key: SECRET
+        fromGroup: yapper-prod
+      - key: ADMIN_EMAILS
+        fromGroup: yapper-prod
+    plan: free
