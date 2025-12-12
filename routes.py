@@ -56,11 +56,8 @@ def read_post(post_id: int, session: Session = Depends(get_session)):
     return {
         "id": post.id,
         "content": post.content,
-        "user": {
-            "id": post.user.id,
-            "email": post.user.email
         } if post.user else None
-    }
+    
 
 # Get detailed info about a specific post
 @router.get("/posts/{post_id}/info")
