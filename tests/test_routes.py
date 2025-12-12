@@ -22,7 +22,7 @@ def test_read_post_success(client, session):
     assert response.status_code == 200
     assert response.json() == {
         "id": post.id,
-        "content": "Hello this is my yapper post!",
+        "content": "Hello this is my post!",
         "user": {
             "id": user.id,
             "email": "test@example.com"
