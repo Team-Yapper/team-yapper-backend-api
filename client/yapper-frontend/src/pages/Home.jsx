@@ -56,7 +56,7 @@ function Home() {
         <button
           type="button"
           onClick={() => setShowCreatePost(true)}
-          className="fixed bottom-8 right-8 w-14 h-14 bg-black-500 text-white text-2xl rounded-full shadow-lg hover:bg-blue-600 flex items-center justify-center"
+          className="fixed bottom-8 right-8 w-14 h-14 rounded-lg border border-transparent font-medium bg-gray-900 text-white cursor-pointer transition-colors duration-250 hover:border-blue-500 flex items-center justify-center text-2xl shadow-lg leading-none pb-1"
         >
           +
         </button>
@@ -70,7 +70,7 @@ function Home() {
             {/* Close button */}
             <button
               onClick={() => setShowCreatePost(false)}
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-2xl"
+              className="absolute top-2 right-2 px-3 py-2 rounded-lg border border-transparent font-medium bg-gray-900 text-white cursor-pointer transition-colors duration-250 hover:border-blue-500"
             >
               ✕
             </button>
