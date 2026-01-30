@@ -4,6 +4,7 @@ from fastapi.responses import RedirectResponse
 from authlib.integrations.starlette_client import OAuth
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.config import Config
+from fastapi.middleware.cors import CORSMiddleware
 from urllib.parse import urlencode
 from database import init_db
 from sqlmodel import Session, select
@@ -26,6 +27,19 @@ load_dotenv()
 app = FastAPI()
 app.add_middleware(SessionMiddleware,
                    secret_key=os.getenv("SECRET", "!supersecret"))
+
+origins = [
+    "http://localhost:5173",  # Vite dev server
+    # add production URLs 
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
 # db initialize
 @app.on_event("startup")
