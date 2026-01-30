@@ -40,7 +40,7 @@ function Home() {
               className="p-4 bg-white rounded-lg shadow hover:shadow-md transition"
             >
               <h2 className="font-bold text-lg">{post.content}</h2>
-              <p className="italic text-gray-700 mt-2 flex justify-end">Author</p>
+              <p className="italic text-gray-700 mt-2 flex justify-end">{post.user_email || "Unknown"}</p>
             </div>
           ))
         )}
