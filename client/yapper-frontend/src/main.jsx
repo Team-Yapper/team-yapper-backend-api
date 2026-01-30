@@ -3,6 +3,8 @@ import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Home from './pages/Home'
 import CreatePost from './pages/CreatePost'
+import ProfilePage from './pages/ProfilePage'
+import UpdatePost from './pages/UpdatePost'
 import App from './App'
 
 import './index.css'
