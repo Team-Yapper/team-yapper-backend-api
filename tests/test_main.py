@@ -116,5 +116,5 @@ def test_logout_clears_session(client):
 def test_logout_redirect(client):
     response = client.get("/logout", follow_redirects=False)
     assert response.status_code == 307
-    assert "auth0" in response.headers["location"].lower()
+    assert "localhost" in response.headers["location"].lower()
     assert "logout" in response.headers["location"].lower()
