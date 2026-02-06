@@ -107,7 +107,7 @@ async def callback(request: Request, db: Session = Depends(get_session)):
 
     request.session["user"] = {"id": user.id, "email": user.email, "is_admin": user.is_admin}
     # change if want redirect different after login
-    return RedirectResponse(url='/posts')
+    return RedirectResponse(url='http://localhost:5173/')
 
 # auth logout
 @app.get('/logout')

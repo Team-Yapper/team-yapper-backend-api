@@ -7,8 +7,23 @@ function Home() {
   const [posts, setPosts] = useState([]);
   const [error, setError] = useState(false);
   const [showCreatePost, setShowCreatePost] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
+    // Check if user is logged in
+    fetch("http://127.0.0.1:8000/user", {
+      credentials: "include",
+    })
+      .then((res) => {
+        if (res.ok) {
+          setIsLoggedIn(true);
+        } else {
+          setIsLoggedIn(false);
+        }
+      })
+      .catch(() => setIsLoggedIn(false));
+
+    // Fetch posts
     fetch("http://127.0.0.1:8000/posts")
       .then((res) => {
         if (!res.ok) throw new Error("Fetch failed");
@@ -51,8 +66,8 @@ function Home() {
       </div>
 
       {/* V FOR CREATE POST FUNCTIONALITY V */}
-      {/* Fixed position + button */}
-      {!showCreatePost && (
+      {/* Fixed position + button - only show if logged in */}
+      {!showCreatePost && isLoggedIn && (
         <button
           type="button"
           onClick={() => setShowCreatePost(true)}
