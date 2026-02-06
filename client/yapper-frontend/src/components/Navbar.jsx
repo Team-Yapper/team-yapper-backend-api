@@ -8,6 +8,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+
   // Determine backend URL based on environment
   const isLocalhost =
     window.location.hostname === "localhost" ||
