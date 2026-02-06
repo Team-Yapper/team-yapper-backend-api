@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom'
+import Navbar from '../components/Navbar.jsx'
 import CreatePost from "./CreatePost";
-import Navbar from "../components/NavBar.jsx";
 import ErrorPage from "../pages/ErrorPage";
 
 function Home() {
