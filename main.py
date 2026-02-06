@@ -67,7 +67,7 @@ oauth.register(
 AUTH0_DOMAIN = os.getenv("AUTH0_DOMAIN")
 AUTH0_CLIENT_ID = os.getenv("AUTH0_CLIENT_ID")
 # change if want redirect different after logout
-REDIRECT_AFTER_LOGOUT = "https://team-yapper-backend-api-1.onrender.com/login"
+REDIRECT_AFTER_LOGOUT = "http://localhost:5173/"
 
 # set of admin emails
 admin_emails = {e.strip().lower() for e in os.getenv("ADMIN_EMAILS", "").split(",") if e.strip()}
@@ -118,7 +118,7 @@ async def logout(request: Request):
         "client_id": AUTH0_CLIENT_ID,
         "returnTo": REDIRECT_AFTER_LOGOUT,
     })
-    logout_url = f"https://{AUTH0_DOMAIN}/v2/logout?{params}"
+    logout_url = f"http://localhost:5173/"
 
     return RedirectResponse(url=logout_url)
 

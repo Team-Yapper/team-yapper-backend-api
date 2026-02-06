@@ -7,9 +7,11 @@ function ProfilePage() {
   const [user, setUser] = useState({ name: '', username: '', bio: '', id: 1 })
   const [error, setError] = useState(false)
 
+  // Random profile picture URL from picsum.photos
   const randomProfilePic = `https://picsum.photos/80?random=${Math.floor(Math.random() * 1000)}`
 
   useEffect(() => {
+    // Fetch posts for the user
     fetch(`http://127.0.0.1:8000/user/${user.id}/posts`)
       .then(async (res) => {
         if (!res.ok) throw new Error(`Fetch failed with status ${res.status}`)
@@ -18,11 +20,13 @@ function ProfilePage() {
       .then((data) => {
         setPosts(data.posts || [])
 
+        // Set user info from backend email
         if (data.email) {
           setUser((prev) => ({
             ...prev,
             username: data.email,
             name: data.email.split('@')[0],
+            bio: prev.bio,
           }))
         }
       })
@@ -33,11 +37,22 @@ function ProfilePage() {
   }, [user.id])
 
   return (
-    <div className="min-h-screen bg-gray-900 flex justify-center">
-      <div className="w-full max-w-4xl flex flex-col h-screen px-6 py-12">
+    <div className="min-h-screen bg-gray-900 px-6 py-12 flex justify-center relative">
+      {/* Logout Button*/}
+       <button
+        onClick={() => {
+          window.location.href = 'https://team-yapper-backend-api-1.onrender.com/logout'
+        }}
+        className="absolute top-6 right-6 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
+      >
+        Logout
+      </button>
+
+      <div className="w-full max-w-4xl flex flex-col items-center space-y-8">
         {/* Profile Box */}
-        <div className="w-full bg-gray-800 p-8 rounded-xl border border-gray-700 shadow-2xl text-center mb-8">
+        <div className="w-full bg-gray-800 p-8 rounded-xl border border-gray-700 shadow-2xl text-center">
           <div className="flex flex-col items-center space-y-4">
+            {/* Random profile picture */}
             <img
               src={randomProfilePic}
               alt="Profile"
@@ -52,41 +67,39 @@ function ProfilePage() {
         </div>
 
         {/* Posts Section */}
-        <div className="flex-1 flex flex-col w-full">
-          <h2 className="text-2xl font-semibold mb-4 text-white">Your posts</h2>
+        <div className="w-full flex-1 flex flex-col space-y-4">
+          <h2 className="text-2xl font-semibold mb-4 text-white w-full">Your posts</h2>
 
-          <div className="flex-1 flex flex-col justify-center">
-            {error && (
-              <div className="text-sm text-red-500 text-center">
-                Failed to load posts.
-              </div>
-            )}
+          {error && (
+            <div className="text-sm text-red-500 text-center py-20 w-full">
+              Failed to load posts.
+            </div>
+          )}
 
-            {!error && posts.length === 0 && (
-              <div className="text-sm text-white text-center">
-                No posts to display.
-              </div>
-            )}
+          {!error && posts.length === 0 && (
+            <div className="flex-1 text-sm text-gray-300 text-center py-20 w-full">
+              No posts to display.
+            </div>
+          )}
 
-            {!error && posts.length > 0 && (
-              <ul className="space-y-4 w-full">
-                {posts.map((post) => (
-                  <li
-                    key={post.id}
-                    className="bg-gray-800 p-4 rounded border border-gray-700 flex justify-between items-start w-full"
+          {!error && posts.length > 0 && (
+            <ul className="space-y-4 w-full">
+              {posts.map((post) => (
+                <li
+                  key={post.id}
+                  className="bg-gray-800 p-4 rounded border border-gray-700 flex justify-between items-start w-full"
+                >
+                  <p className="text-gray-300">{post.content}</p>
+                  <button
+                    onClick={() => navigate(`/update/${post.id}`)}
+                    className="ml-4 px-3 py-1 bg-indigo-700 text-white text-sm rounded hover:bg-indigo-500 transition"
                   >
-                    <p className="text-gray-300">{post.content}</p>
-                    <button
-                      onClick={() => navigate(`/update/${post.id}`)}
-                      className="ml-4 px-3 py-1 bg-indigo-700 text-white text-sm rounded hover:bg-indigo-500 transition"
-                    >
-                      Update
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+                    Update
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
     </div>
