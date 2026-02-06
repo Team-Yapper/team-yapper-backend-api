@@ -11,7 +11,7 @@ function Home() {
 
   useEffect(() => {
     // Check if user is logged in
-    fetch("http://127.0.0.1:8000/user", {
+    fetch("http://localhost:8000/user", {
       credentials: "include",
     })
       .then((res) => {
@@ -24,7 +24,7 @@ function Home() {
       .catch(() => setIsLoggedIn(false));
 
     // Fetch posts
-    fetch("http://127.0.0.1:8000/posts")
+    fetch("http://localhost:8000/posts")
       .then((res) => {
         if (!res.ok) throw new Error("Fetch failed");
         return res.json();
