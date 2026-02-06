@@ -20,6 +20,16 @@ def require_login(request: Request):
         raise HTTPException(status_code=401, detail="Unauthorized")
     return user
 
+# Get current user info
+@router.get("/user")
+def get_user(user: dict = Depends(require_login)):
+    return user
+
+# checks if user is logged in
+@router.get("/user")
+def get_user(user: dict = Depends(require_login)):
+    return user
+
 
 # @router.get("/posts")
 # def get_all_posts(session: Session = Depends(get_session)):

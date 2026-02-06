@@ -1,14 +1,30 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar.jsx'
+import CreatePost from "./CreatePost";
 import ErrorPage from "../pages/ErrorPage";
 
 function Home() {
   const [posts, setPosts] = useState([]);
   const [error, setError] = useState(false);
-  const navigate = useNavigate()
+  const [showCreatePost, setShowCreatePost] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
+    // Check if user is logged in
+    fetch("http://127.0.0.1:8000/user", {
+      credentials: "include",
+    })
+      .then((res) => {
+        if (res.ok) {
+          setIsLoggedIn(true);
+        } else {
+          setIsLoggedIn(false);
+        }
+      })
+      .catch(() => setIsLoggedIn(false));
+
+    // Fetch posts
     fetch("http://127.0.0.1:8000/posts")
       .then((res) => {
         if (!res.ok) throw new Error("Fetch failed");
@@ -26,6 +42,7 @@ function Home() {
       </div>
     );
   }
+
 
   return (  
     <div className="min-h-screen bg-gray-900">
@@ -46,15 +63,39 @@ function Home() {
         )}
       </div>
 
-        <div className="max-w-3xl mx-auto mt-6 px-4 flex justify-end">
+      {/* V FOR CREATE POST FUNCTIONALITY V */}
+      {/* Fixed position + button - only show if logged in */}
+      {!showCreatePost && isLoggedIn && (
         <button
-          onClick={() => navigate("/create")}
-          className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600 transition"
+          type="button"
+          onClick={() => setShowCreatePost(true)}
+          className="fixed bottom-8 right-8 w-14 h-14 rounded-lg border border-transparent font-medium bg-gray-900 text-white cursor-pointer transition-colors duration-250 hover:border-blue-500 flex items-center justify-center text-2xl shadow-lg leading-none pb-1"
         >
-          Create Post
+          +
         </button>
-      </div>
-    </div>
-  )
+      )}
+
+      {/* Modal overlay */}
+      {showCreatePost && (
+        <div className="fixed inset-0 pointer-events-none">
+          {/* Modal window - bottom right */}
+          <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 md:bottom-24 md:right-8 bg-white rounded-lg shadow-xl w-[calc(100%-2rem)] sm:w-[90%] md:w-[500px] h-[90vh] sm:h-[90vh] md:h-[600px] pointer-events-auto">
+            {/* Close button */}
+            <button
+              onClick={() => setShowCreatePost(false)}
+              className="absolute top-2 right-2 px-3 py-2 rounded-lg border border-transparent font-medium bg-gray-900 text-white cursor-pointer transition-colors duration-250 hover:border-blue-500"
+            >
+              ✕
+            </button>
+            {/* CreatePost form inside modal */}
+            <div className="p-6">
+              <CreatePost onClose={() => setShowCreatePost(false)} />
+            </div>
+          </div>
+        </div>
+      )}
+      {/* ^ FOR CREATE POST FUNCTIONALITY ^ */}
+    </>
+  );
 }
-export default Home
+export default Home;

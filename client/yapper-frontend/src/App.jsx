@@ -1,14 +1,12 @@
-import { Outlet, NavLink } from 'react-router-dom'
-import './App.css'
+import { Outlet, NavLink } from "react-router-dom";
+import "./App.css";
 
 function App() {
   return (
-    
-      <main>
-        <Outlet />
-      </main>
-   
-  )
+    <main>
+      <Outlet />
+    </main>
+  );
 }
 
-export default App
+export default App;
