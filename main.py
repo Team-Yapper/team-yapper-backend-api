@@ -118,7 +118,7 @@ async def logout(request: Request):
         "client_id": AUTH0_CLIENT_ID,
         "returnTo": REDIRECT_AFTER_LOGOUT,
     })
-    logout_url = f"http://localhost:5173/"
+    logout_url = f"https://{AUTH0_DOMAIN}/v2/logout?{params}"
 
     return RedirectResponse(url=logout_url)
 
