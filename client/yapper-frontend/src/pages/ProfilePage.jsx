@@ -19,40 +19,52 @@ function ProfilePage() {
   const randomProfilePic = `https://picsum.photos/80?random=${Math.floor(Math.random() * 1000)}`;
 
   useEffect(() => {
-    // First, get the logged-in user's info
-    fetch(`${backendUrl}/user`, {
-      credentials: "include",
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Not logged in");
-        return res.json();
-      })
-      .then((userInfo) => {
-        // Now fetch posts for this user
-        return fetch(`${backendUrl}/user/${userInfo.id}/posts`)
-          .then((res) => res.json())
-          .then((data) => ({
-            posts: data.posts || [],
-            email: userInfo.email,
-          }));
-      })
-      .then((data) => {
-        setPosts(data.posts);
-        setUser((prev) => ({
-          ...prev,
-          username: data.email,
-          name: data.email.split("@")[0],
-          id: user.id, // from the /user response
-        }));
-      })
-      .catch((err) => {
-        console.error("Fetch error:", err);
-        setError(true);
+  const fetchUserAndPosts = async () => {
+    try {
+      const userRes = await fetch(`${backendUrl}/user`, { credentials: "include" });
+      if (!userRes.ok) throw new Error("Not logged in");
+
+      const userInfo = await userRes.json();
+      setUser({
+        id: userInfo.id,
+        username: userInfo.email,
+        name: userInfo.email.split("@")[0],
+        bio: userInfo.bio || "",
       });
-  }, [backendUrl]);
+
+      const postsRes = await fetch(`${backendUrl}/user/${userInfo.id}/posts`);
+      const postData = await postsRes.json();
+      setPosts(postData.posts || []);
+    } catch (err) {
+      console.error("Fetch error:", err);
+      setError(true);
+    }
+  };
+
+  fetchUserAndPosts();
+}, [backendUrl]);
 
   return (
     <div className="min-h-screen bg-gray-900 px-6 py-12 flex justify-center relative">
+      {/* Back Button */}
+      <button
+        onClick={() => navigate("/")}
+        className="absolute top-6 left-6 flex items-center space-x-2 px-3 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 transition"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-5 w-5"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fillRule="evenodd"
+            d="M9.707 14.707a1 1 0 01-1.414 0L3.586 10l4.707-4.707a1 1 0 011.414 1.414L6.414 10l3.293 3.293a1 1 0 010 1.414z"
+            clipRule="evenodd"
+          />
+        </svg>
+        <span>Home</span>
+      </button>
       {/* Logout Button*/}
       <button
         onClick={() => {
