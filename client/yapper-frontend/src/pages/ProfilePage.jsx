@@ -1,47 +1,62 @@
-import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function ProfilePage() {
-  const navigate = useNavigate()
-  const [posts, setPosts] = useState([])
-  const [user, setUser] = useState({ name: '', username: '', bio: '', id: 1 })
-  const [error, setError] = useState(false)
+  const navigate = useNavigate();
+  const [posts, setPosts] = useState([]);
+  const [user, setUser] = useState({ name: "", username: "", bio: "", id: 1 });
+  const [error, setError] = useState(false);
+
+  // Determine backend URL based on environment
+  const isLocalhost =
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1";
+  const backendUrl = isLocalhost
+    ? "http://localhost:8000"
+    : "https://team-yapper-backend-api-1.onrender.com";
 
   // Random profile picture URL from picsum.photos
-  const randomProfilePic = `https://picsum.photos/80?random=${Math.floor(Math.random() * 1000)}`
+  const randomProfilePic = `https://picsum.photos/80?random=${Math.floor(Math.random() * 1000)}`;
 
   useEffect(() => {
-    // Fetch posts for the user
-    fetch(`http://127.0.0.1:8000/user/${user.id}/posts`)
-      .then(async (res) => {
-        if (!res.ok) throw new Error(`Fetch failed with status ${res.status}`)
-        return res.json()
+    // First, get the logged-in user's info
+    fetch(`${backendUrl}/user`, {
+      credentials: "include",
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Not logged in");
+        return res.json();
+      })
+      .then((userInfo) => {
+        // Now fetch posts for this user
+        return fetch(`${backendUrl}/user/${userInfo.id}/posts`)
+          .then((res) => res.json())
+          .then((data) => ({
+            posts: data.posts || [],
+            email: userInfo.email,
+          }));
       })
       .then((data) => {
-        setPosts(data.posts || [])
-
-        // Set user info from backend email
-        if (data.email) {
-          setUser((prev) => ({
-            ...prev,
-            username: data.email,
-            name: data.email.split('@')[0],
-            bio: prev.bio,
-          }))
-        }
+        setPosts(data.posts);
+        setUser((prev) => ({
+          ...prev,
+          username: data.email,
+          name: data.email.split("@")[0],
+          id: user.id, // from the /user response
+        }));
       })
       .catch((err) => {
-        console.error("Fetch error:", err)
-        setError(true)
-      })
-  }, [user.id])
+        console.error("Fetch error:", err);
+        setError(true);
+      });
+  }, [backendUrl]);
 
   return (
     <div className="min-h-screen bg-gray-900 px-6 py-12 flex justify-center relative">
       {/* Logout Button*/}
-       <button
+      <button
         onClick={() => {
-          window.location.href = 'https://team-yapper-backend-api-1.onrender.com/logout'
+          window.location.href = `${backendUrl}/logout`;
         }}
         className="absolute top-6 right-6 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
       >
@@ -59,7 +74,9 @@ function ProfilePage() {
               className="w-24 h-24 rounded-full object-cover mx-auto"
             />
             <div>
-              <div className="text-xl font-semibold text-white">{user.name}</div>
+              <div className="text-xl font-semibold text-white">
+                {user.name}
+              </div>
               <div className="text-sm text-gray-300">{user.username}</div>
             </div>
           </div>
@@ -68,7 +85,9 @@ function ProfilePage() {
 
         {/* Posts Section */}
         <div className="w-full flex-1 flex flex-col space-y-4">
-          <h2 className="text-2xl font-semibold mb-4 text-white w-full">Your posts</h2>
+          <h2 className="text-2xl font-semibold mb-4 text-white w-full">
+            Your posts
+          </h2>
 
           {error && (
             <div className="text-sm text-red-500 text-center py-20 w-full">
@@ -103,7 +122,7 @@ function ProfilePage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default ProfilePage
+export default ProfilePage;
