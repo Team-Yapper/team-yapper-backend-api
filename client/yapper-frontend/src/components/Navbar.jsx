@@ -7,7 +7,7 @@ import profile_pic from "../images/profile_pic.png"
 const Navbar = () => {
     const navigate = useNavigate()
     return (
-        <nav className="flex justify-between items-center px-6 py-4 bg-gray-100 shadow">
+        <nav className="flex justify-between items-center px-6 py-4 bg-gray-600 shadow">
         <div>
             <img src={Yapper_logo} alt="Logo" className="h-10 w-10 ml-2" onClick={() => navigate("/")} />
         </div>

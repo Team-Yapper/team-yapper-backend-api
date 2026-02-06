@@ -28,7 +28,7 @@ function Home() {
   }
 
   return (  
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-900">
       <Navbar />
       <div className="max-w-3xl mx-auto mt-12 px-4 space-y-10">
         {posts.length === 0 ? (
@@ -37,10 +37,10 @@ function Home() {
           posts.map((post) => (
             <div
               key={post.id}
-              className="p-4 bg-white rounded-lg shadow hover:shadow-md transition"
+              className="group p-6 bg-gray-800 rounded-xl border border-gray-700 shadow-sm transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl hover:border-blue-500/50 hover:bg-gray-750 cursor-pointer"
             >
-              <h2 className="font-bold text-lg">{post.content}</h2>
-              <p className="italic text-gray-700 mt-2 flex justify-end">{post.user_email || "Unknown"}</p>
+              <h2 className="font-semibold text-lg text-gray-100 group-hover:text-blue-400 transition-colors">{post.content}</h2>
+              <p className="italic text-sm text-gray-500 mt-3 flex justify-end group-hover:text-gray-400 transition-colors">{post.user_email || "Unknown"}</p>
             </div>
           ))
         )}
