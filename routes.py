@@ -1,8 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlmodel import Session, select
+from sqlalchemy.orm import selectinload
+from typing import List
 from database import get_session
 from models import Post, User
 from pydantic import BaseModel
+from schemas import PostRead
 
 router = APIRouter()
 
@@ -18,19 +21,42 @@ def require_login(request: Request):
     return user
 
 
-@router.get("/posts")
+# @router.get("/posts")
+# def get_all_posts(session: Session = Depends(get_session)):
+#     try:
+#         statement = select(Post)
+#         posts = session.exec(statement).all()
+#         return posts
+#     except Exception as e:
+#         # Catch any unexpected error
+#         raise HTTPException(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             detail=f"An error occurred while fetching posts: {str(e)}"
+#         )
+
+@router.get("/posts", response_model=List[PostRead])
 def get_all_posts(session: Session = Depends(get_session)):
     try:
-        statement = select(Post)
+        statement = select(Post).options(selectinload(Post.user))
         posts = session.exec(statement).all()
-        return posts
-    except Exception as e:
-        # Catch any unexpected error
+
+        # Map posts to PostRead schema including user's email
+        return [
+            PostRead(
+                id=post.id,
+                content=post.content,
+                user_id=post.user_id,
+                user_email=post.user.email if post.user else None
+            )
+            for post in posts
+        ]
+
+    except Exception:
+        # Generic error message is safer for production
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"An error occurred while fetching posts: {str(e)}"
+            detail="There was an error fetching posts."
         )
-
 
 @router.post("/posts")
 def create_post(post: PostCreate, user: dict = Depends(require_login), session: Session = Depends(get_session)):
