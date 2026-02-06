@@ -19,30 +19,37 @@ function ProfilePage() {
   const randomProfilePic = `https://picsum.photos/80?random=${Math.floor(Math.random() * 1000)}`;
 
   useEffect(() => {
-    // Fetch posts for the user
-    fetch(`http://127.0.0.1:8000/user/${user.id}/posts`)
-      .then(async (res) => {
-        if (!res.ok) throw new Error(`Fetch failed with status ${res.status}`);
+    // First, get the logged-in user's info
+    fetch(`${backendUrl}/user`, {
+      credentials: "include",
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Not logged in");
         return res.json();
       })
-      .then((data) => {
-        setPosts(data.posts || []);
-
-        // Set user info from backend email
-        if (data.email) {
-          setUser((prev) => ({
-            ...prev,
-            username: data.email,
-            name: data.email.split("@")[0],
-            bio: prev.bio,
+      .then((userInfo) => {
+        // Now fetch posts for this user
+        return fetch(`${backendUrl}/user/${userInfo.id}/posts`)
+          .then((res) => res.json())
+          .then((data) => ({
+            posts: data.posts || [],
+            email: userInfo.email,
           }));
-        }
+      })
+      .then((data) => {
+        setPosts(data.posts);
+        setUser((prev) => ({
+          ...prev,
+          username: data.email,
+          name: data.email.split("@")[0],
+          id: user.id, // from the /user response
+        }));
       })
       .catch((err) => {
         console.error("Fetch error:", err);
         setError(true);
       });
-  }, [user.id]);
+  }, [backendUrl]);
 
   return (
     <div className="min-h-screen bg-gray-900 px-6 py-12 flex justify-center relative">
