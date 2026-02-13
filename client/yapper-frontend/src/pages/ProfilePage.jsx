@@ -21,7 +21,7 @@ function ProfilePage() {
     : "https://team-yapper-backend-api-1.onrender.com";
 
   // Random profile picture URL from picsum.photos
-  const randomProfilePic = `https://picsum.photos/80?random=${Math.floor(Math.random() * 1000)}`;
+  const randomProfilePic = `https://picsum.photos/80?random=${user.id}`;
 
   useEffect(() => {
   const fetchUserAndPosts = async () => {
