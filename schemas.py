@@ -6,3 +6,4 @@ class PostRead(SQLModel):
     content: str
     user_id: int
     user_email: Optional[str]  # include the email
+    created_at: str

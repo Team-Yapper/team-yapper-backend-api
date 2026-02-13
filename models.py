@@ -1,5 +1,6 @@
 from typing import Optional, List
 from sqlmodel import SQLModel, Field, Relationship
+from datetime import datetime, timezone
 
 # user model
 class User(SQLModel, table=True):
@@ -14,3 +15,5 @@ class Post(SQLModel, table=True):
     content: str
     user_id: int = Field(foreign_key="user.id")
     user: Optional[User] = Relationship(back_populates="posts")
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
