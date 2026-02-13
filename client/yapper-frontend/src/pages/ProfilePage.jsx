@@ -20,19 +20,9 @@ function ProfilePage() {
     ? "http://localhost:8000"
     : "https://team-yapper-backend-api-1.onrender.com";
 
-  function hashStringToNumber(str) {
-    let h = 0
-    for (let i = 0; i < str.length; i++) h = (h << 5) - h + str.charCodeAt(i)
-    return Math.abs(h)
-  }
+  // Random profile picture URL from picsum.photos
+  const randomProfilePic = `https://picsum.photos/80?random=${user.id}`;
 
-  const seedSource = user.id ? String(user.id) : (user.username || 'anon')
-  const picSeed = Number.isFinite(Number(seedSource))
-    ? Number(seedSource) % 1000
-    : hashStringToNumber(seedSource) % 1000
-
-  const randomProfilePic = `https://picsum.photos/80?random=${picSeed}`
-  
   useEffect(() => {
   const fetchUserAndPosts = async () => {
     try {
