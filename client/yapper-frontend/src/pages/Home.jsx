@@ -48,7 +48,7 @@ function Home() {
 
   return (
     <>
-      <div className="min-h-screen bg-gray-900">
+      <div className="min-h-screen bg-gray-900 pb-20">
         <Navbar />
         <div className="max-w-3xl mx-auto mt-12 px-4 space-y-10">
           {posts.length === 0 ? (
