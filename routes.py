@@ -6,12 +6,20 @@ from database import get_session
 from models import Post, User
 from pydantic import BaseModel
 from schemas import PostRead
+from datetime import datetime
 
 router = APIRouter()
 
 
 class PostCreate(BaseModel):
     content: str
+
+
+def format_datetime(dt: datetime) -> str:
+    """Format datetime to 'MM/DD/YY at h:MMAM/PM' format"""
+    if dt:
+        return dt.strftime("%m/%d/%y at %I:%M%p")
+    return ""
 
 # auth0 dependency
 def require_login(request: Request):
@@ -45,13 +53,14 @@ def get_all_posts(session: Session = Depends(get_session)):
         statement = select(Post).options(selectinload(Post.user))
         posts = session.exec(statement).all()
 
-        # Map posts to PostRead schema including user's email
+        # Map posts to PostRead schema including user's email and formatted created_at
         return [
             PostRead(
                 id=post.id,
                 content=post.content,
                 user_id=post.user_id,
-                user_email=post.user.email if post.user else None
+                user_email=post.user.email if post.user else None,
+                created_at=format_datetime(post.created_at)
             )
             for post in posts
         ]
@@ -63,6 +72,7 @@ def get_all_posts(session: Session = Depends(get_session)):
             detail="There was an error fetching posts."
         )
 
+# Create a new post
 @router.post("/posts")
 def create_post(post: PostCreate, user: dict = Depends(require_login), session: Session = Depends(get_session)):
     # Grab the user from DB
@@ -87,6 +97,7 @@ def read_post(post_id: int, session: Session = Depends(get_session)):
     return {
         "id": post.id,
         "content": post.content,
+        "created_at": format_datetime(post.created_at),
         "user": {
             "id": post.user.id,
             "email": post.user.email
@@ -103,6 +114,7 @@ def read_post_info(post_id: int, session: Session = Depends(get_session)):
         "id": post.id,
         "content": post.content,
         "user_id": post.user_id,
+        "created_at": format_datetime(post.created_at),
         "user": {
             "email": post.user.email
         } if post.user else None
@@ -119,7 +131,7 @@ def get_user_posts(user_id: int, session: Session = Depends(get_session)):
     posts = session.exec(select(Post).where(Post.user_id == user_id)).all()
     # Format the posts (empty list is fine)
     filtered_posts = [
-        {"id": post.id, "content": post.content} 
+        {"id": post.id, "content": post.content, "created_at": format_datetime(post.created_at)} 
         for post in posts
     ]
     return {
