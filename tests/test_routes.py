@@ -20,14 +20,12 @@ def test_read_post_success(client, session):
     response = client.get(f"/posts/{post.id}")
 
     assert response.status_code == 200
-    assert response.json() == {
-        "id": post.id,
-        "content": "Hello this is my yapper post!",
-        "user": {
-            "id": user.id,
-            "email": "test@example.com"
-        }
-    }
+    data = response.json()
+    assert data["id"] == post.id
+    assert data["content"] == "Hello this is my yapper post!"
+    assert "created_at" in data
+    assert data["user"]["id"] == user.id
+    assert data["user"]["email"] == "test@example.com"
 
 # Test reading a non-existent post
 def test_read_post_invalid_id(client):
@@ -53,14 +51,12 @@ def test_read_post_info_success(client, session):
 
     # Validate response
     assert response.status_code == 200
-    assert response.json() == {
-        "id": post.id,
-        "content": "Hello this is my yapper post!",
-        "user_id": user.id,
-        "user": {
-            "email": "test@example.com"
-        }
-    }
+    data = response.json()
+    assert data["id"] == post.id
+    assert data["content"] == "Hello this is my yapper post!"
+    assert data["user_id"] == user.id
+    assert "created_at" in data
+    assert data["user"]["email"] == "test@example.com"
 
 # Test reading a non-existent post
 def test_read_post_info_not_found(client):
@@ -87,13 +83,15 @@ def test_get_user_posts_success(client, session):
     response = client.get(f"/user/{user.id}/posts")
 
     assert response.status_code == 200
-    assert response.json() == {
-        "email": "test@example.com",
-        "posts": [
-            {"id": post1.id, "content": "First post"},
-            {"id": post2.id, "content": "Second post"}
-        ]
-    }
+    data = response.json()
+    assert data["email"] == "test@example.com"
+    assert len(data["posts"]) == 2
+    assert data["posts"][0]["id"] == post1.id
+    assert data["posts"][0]["content"] == "First post"
+    assert "created_at" in data["posts"][0]
+    assert data["posts"][1]["id"] == post2.id
+    assert data["posts"][1]["content"] == "Second post"
+    assert "created_at" in data["posts"][1]
 
 # Test getting posts for a user with no posts
 def test_get_user_posts_empty_list(client, session):
@@ -148,7 +146,11 @@ def test_get_all_posts_with_data(client, session):
     posts = response.json()
     assert len(posts) == 2
     assert posts[0]["content"] == "First post"
+    assert "created_at" in posts[0]
+    assert "user_email" in posts[0]
     assert posts[1]["content"] == "Second post"
+    assert "created_at" in posts[1]
+    assert "user_email" in posts[1]
 
 # Test to check /GET/{post_id}
 def test_get_post_by_id(client, session):
@@ -168,14 +170,12 @@ def test_get_post_by_id(client, session):
     response = client.get(f"/posts/{post.id}")
     assert response.status_code == 200
 
-    assert response.json() == {
-        "id": post.id,
-        "content": post.content,
-        "user": {
-            "id": user.id,
-            "email": user.email
-        }
-    }
+    data = response.json()
+    assert data["id"] == post.id
+    assert data["content"] == post.content
+    assert "created_at" in data
+    assert data["user"]["id"] == user.id
+    assert data["user"]["email"] == user.email
 
 
 # Test to check /POST a new post
@@ -197,6 +197,7 @@ def test_create_post(client, session):
     assert data["content"] == "Hello world"
     assert data["user_id"] == user.id
     assert "id" in data
+    assert "created_at" in data
 
 # Test that data is persistent
 def test_create_post_persists(client, session):
