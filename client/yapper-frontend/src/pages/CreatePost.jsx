@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function CreatePost({ onClose }) {
+function CreatePost({ onClose, onCreate }) {
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -40,7 +40,9 @@ function CreatePost({ onClose }) {
       const newPost = await response.json();
       console.log("Post created:", newPost);
       setContent("");
-      if (onClose) {
+      if (onCreate) {
+        onCreate(newPost);
+      } else if (onClose) {
         onClose();
       }
     } catch (err) {
