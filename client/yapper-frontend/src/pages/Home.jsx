@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import CreatePost from "./CreatePost";
-import Navbar from "../components/NavBar.jsx";
+import Navbar from "../components/Navbar.jsx";
 import ErrorPage from "../pages/ErrorPage";
 
 function Home() {
