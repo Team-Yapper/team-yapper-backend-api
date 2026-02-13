@@ -9,6 +9,16 @@ function Home() {
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+  const fetchPosts = () => {
+  fetch("http://localhost:8000/posts")
+    .then((res) => {
+      if (!res.ok) throw new Error("Fetch failed");
+      return res.json();
+    })
+    .then((data) => setPosts(data))
+    .catch(() => setError(true));
+  };
+
   useEffect(() => {
     // Check if user is logged in
     fetch("http://localhost:8000/user", {
@@ -24,13 +34,7 @@ function Home() {
       .catch(() => setIsLoggedIn(false));
 
     // Fetch posts
-    fetch("http://localhost:8000/posts")
-      .then((res) => {
-        if (!res.ok) throw new Error("Fetch failed");
-        return res.json();
-      })
-      .then((data) => setPosts(data))
-      .catch(() => setError(true));
+    fetchPosts()
   }, []);
 
   if (error) {
@@ -44,7 +48,7 @@ function Home() {
 
   return (
     <>
-      <div className="min-h-screen bg-gray-900">
+      <div className="min-h-screen bg-gray-900 pb-20">
         <Navbar />
         <div className="max-w-3xl mx-auto mt-12 px-4 space-y-10">
           {posts.length === 0 ? (
@@ -92,7 +96,13 @@ function Home() {
               </button>
               {/* CreatePost form inside modal */}
               <div className="p-6">
-                <CreatePost onClose={() => setShowCreatePost(false)} />
+                <CreatePost 
+                  onClose={() => setShowCreatePost(false)} 
+                  onCreate={() => {
+                    fetchPosts()
+                    setShowCreatePost(false);
+                  }}
+                />
               </div>
             </div>
           </div>
