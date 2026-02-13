@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import UpdatePostModal from "../components/UpdatePostModal";
 
 function ProfilePage() {
   const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
   const [user, setUser] = useState({ name: "", username: "", bio: "", id: 1 });
   const [error, setError] = useState(false);
+
+  // Modal State
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedPost, setSelectedPost] = useState(null);
 
   // Determine backend URL based on environment
   const isLocalhost =
@@ -50,6 +55,25 @@ function ProfilePage() {
         setError(true);
       });
   }, [backendUrl]);
+
+  const handlePostUpdated = (updatedPost) => {
+  setPosts((prevPosts) =>
+    prevPosts.map((post) =>
+      post.id === updatedPost.id ? updatedPost : post
+    )
+  );
+};
+
+const handlePostDeleted = (deletedPostId) => {
+  setPosts((prevPosts) =>
+    prevPosts.filter((post) => post.id !== deletedPostId)
+  );
+};
+
+const closeModal = () => {
+  setIsModalOpen(false);
+  setSelectedPost(null);
+};
 
   return (
     <div className="min-h-screen bg-gray-900 px-6 py-12 flex justify-center relative">
@@ -110,7 +134,10 @@ function ProfilePage() {
                 >
                   <p className="text-gray-300">{post.content}</p>
                   <button
-                    onClick={() => navigate(`/update/${post.id}`)}
+                    onClick={() => {
+                      setSelectedPost(post);
+                      setIsModalOpen(true);
+                    }}
                     className="ml-4 px-3 py-1 bg-indigo-700 text-white text-sm rounded hover:bg-indigo-500 transition"
                   >
                     Update
@@ -121,6 +148,14 @@ function ProfilePage() {
           )}
         </div>
       </div>
+      <UpdatePostModal
+        isOpen={isModalOpen}
+        post={selectedPost}
+        backendUrl={backendUrl}
+        onClose={closeModal}
+        onPostUpdated={handlePostUpdated}
+        onPostDeleted={handlePostDeleted}
+      />
     </div>
   );
 }
