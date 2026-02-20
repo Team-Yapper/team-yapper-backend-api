@@ -31,6 +31,7 @@ app.add_middleware(SessionMiddleware,
 origins = [
     "http://localhost:5173",  # Vite dev server
     # add production URLs 
+    "https://team-yapper-front-end.onrender.com",
 ]
 
 app.add_middleware(
@@ -67,7 +68,7 @@ oauth.register(
 AUTH0_DOMAIN = os.getenv("AUTH0_DOMAIN")
 AUTH0_CLIENT_ID = os.getenv("AUTH0_CLIENT_ID")
 # change if want redirect different after logout
-REDIRECT_AFTER_LOGOUT = "http://localhost:5173/"
+REDIRECT_AFTER_LOGOUT = "https://team-yapper-front-end.onrender.com/"
 
 # set of admin emails
 admin_emails = {e.strip().lower() for e in os.getenv("ADMIN_EMAILS", "").split(",") if e.strip()}
@@ -107,7 +108,7 @@ async def callback(request: Request, db: Session = Depends(get_session)):
 
     request.session["user"] = {"id": user.id, "email": user.email, "is_admin": user.is_admin}
     # change if want redirect different after login
-    return RedirectResponse(url='http://localhost:5173/')
+    return RedirectResponse(url='https://team-yapper-front-end.onrender.com/')
 
 # auth logout
 @app.get('/logout')

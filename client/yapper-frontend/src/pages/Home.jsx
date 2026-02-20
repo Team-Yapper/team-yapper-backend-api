@@ -10,7 +10,8 @@ function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const fetchPosts = () => {
-  fetch("http://localhost:8000/posts")
+  // fetch("http://localhost:8000/posts")
+  fetch("https://team-yapper-backend-api-1.onrender.com/posts")
     .then((res) => {
       if (!res.ok) throw new Error("Fetch failed");
       return res.json();
@@ -21,7 +22,8 @@ function Home() {
 
   useEffect(() => {
     // Check if user is logged in
-    fetch("http://localhost:8000/user", {
+    // fetch("http://localhost:8000/user", {
+    fetch("https://team-yapper-backend-api-1.onrender.com/user", {
       credentials: "include",
     })
       .then((res) => {
