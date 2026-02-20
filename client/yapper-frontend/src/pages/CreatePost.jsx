@@ -17,7 +17,8 @@ function CreatePost({ onClose, onCreate }) {
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:8000/posts", {
+      // const response = await fetch("http://localhost:8000/posts", {
+      const response = await fetch("https://team-yapper-backend-api-1.onrender.com/posts", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
