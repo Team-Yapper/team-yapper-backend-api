@@ -70,6 +70,7 @@ function UpdatePostModal({
     <div
       className="fixed inset-0 backdrop-blur-sm bg-black/20 flex justify-center items-center z-50"
       onClick={onClose}
+      data-testid="backdrop"
     >
       <div
         className="bg-gray-800 p-6 rounded-lg w-96 border border-gray-700"
