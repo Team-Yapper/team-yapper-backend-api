@@ -9,13 +9,7 @@ const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
 
-  // Determine backend URL based on environment
-  const isLocalhost =
-    window.location.hostname === "localhost" ||
-    window.location.hostname === "127.0.0.1";
-  const backendUrl = isLocalhost
-    ? "http://localhost:8000"
-    : "https://team-yapper-backend-api-1.onrender.com";
+  const backendUrl = "https://team-yapper-backend-api-1.onrender.com";
 
   useEffect(() => {
     // Check if user is logged in
