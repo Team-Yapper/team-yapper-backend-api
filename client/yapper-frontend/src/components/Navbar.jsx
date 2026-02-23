@@ -46,7 +46,13 @@ const Navbar = () => {
           />
         ) : (
           <button
-            onClick={() => (window.location.href = `${backendUrl}/login`)}
+            onClick={() => {
+              console.log(
+                "Login clicked, redirecting to:",
+                `${backendUrl}/login`,
+              );
+              window.location.href = `${backendUrl}/login`;
+            }}
             className="px-4 py-2 rounded-lg border border-transparent font-medium bg-gray-900 text-white cursor-pointer transition-colors duration-250 hover:border-blue-500"
           >
             Login
