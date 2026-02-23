@@ -25,8 +25,6 @@ const Navbar = () => {
       .catch(() => setIsLoggedIn(false));
   }, [backendUrl]);
 
-  const auth0LoginUrl = `https://${import.meta.env.VITE_AUTH0_DOMAIN}/authorize?client_id=${import.meta.env.VITE_AUTH0_CLIENT_ID}&redirect_uri=${encodeURIComponent(import.meta.env.VITE_AUTH0_CALLBACK_URL)}&response_type=code&scope=openid%20profile%20email`;
-
   return (
     <nav className="flex justify-between items-center px-6 py-4 bg-gray-100 shadow">
       <div>
@@ -48,7 +46,7 @@ const Navbar = () => {
           />
         ) : (
           <button
-            onClick={() => (window.location.href = auth0LoginUrl)}
+            onClick={() => (window.location.href = `${backendUrl}/login`)}
             className="px-4 py-2 rounded-lg border border-transparent font-medium bg-gray-900 text-white cursor-pointer transition-colors duration-250 hover:border-blue-500"
           >
             Login
