@@ -77,8 +77,9 @@ admin_emails = {e.strip().lower() for e in os.getenv("ADMIN_EMAILS", "").split("
 # auth login
 @app.get('/login')
 async def login(request: Request):
-    redirect_uri = request.url_for("callback")
-    return await oauth.auth0.authorize_redirect(request, redirect_uri)
+    # Use full callback URL instead of request.url_for
+    callback_url = os.getenv("AUTH0_CALLBACK_URL", "http://127.0.0.1:8000/callback")
+    return await oauth.auth0.authorize_redirect(request, callback_url)
 
 # auth callback
 @app.get('/callback')
