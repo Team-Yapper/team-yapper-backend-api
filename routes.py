@@ -50,7 +50,7 @@ def get_user(user: dict = Depends(require_login)):
 @router.get("/posts", response_model=List[PostRead])
 def get_all_posts(session: Session = Depends(get_session)):
     try:
-        statement = select(Post).options(selectinload(Post.user))
+        statement = select(Post).options(selectinload(Post.user)).order_by(Post.created_at.desc())
         posts = session.exec(statement).all()
 
         # Map posts to PostRead schema including user's email and formatted created_at
