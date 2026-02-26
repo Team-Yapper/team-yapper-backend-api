@@ -25,8 +25,12 @@ load_dotenv()
 
 # fastapi instance and middleware
 app = FastAPI()
-app.add_middleware(SessionMiddleware,
-                   secret_key=os.getenv("SECRET", "!supersecret"))
+app.add_middleware(
+    SessionMiddleware,
+    secret_key=os.getenv("SECRET", "!supersecret"),
+    same_site="none",
+    https_only=True,
+)
 
 origins = [
     "http://localhost:5173",  # Vite dev server
