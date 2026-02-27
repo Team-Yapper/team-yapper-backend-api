@@ -65,7 +65,7 @@ function Home() {
                   {post.content}
                 </h2>
                 <p className="italic text-sm text-gray-500 mt-3 flex justify-end group-hover:text-gray-400 transition-colors">
-                  {post.user_email || "Unknown"}
+                  {post.user_email ? post.user_email.split('@')[0] : "Unknown"}
                 </p>
                 <p className="italic text-xs text-gray-500 mt-3 flex justify-end group-hover:text-gray-400 transition-colors">
                   {post.created_at || "Unknown"}
